@@ -4,14 +4,18 @@ dotenv.config()
 import express from 'express'
 const app = express()
 
+import mongoose from 'mongoose'
+
+
+
+//routers
+import jobRouter from './routes/jobRouter.js'
+app.use
+
 import morgan from 'morgan'
 if(process.env.NODE_ENV === 'development'){
 app.use(morgan('dev'))
 }
-
-fetch('https://www.course-api.com/react-useReducer-cart-project')
-.then((res) => res.json())
-.then((data) => console.log(data))
 
 app.use(express.json())
 
@@ -24,8 +28,28 @@ app.post('/', (req, res) =>{
     res.json({message: 'data received', data: req.body})
 })
 
-const PORT = process.env.PORT || 5100   
-app.listen(PORT, () =>{
+app.use('/api/v1/jobs', jobRouter)
+app.use('/api/v1/jobs/:id', jobRouter)
+
+app.use('*', (req, res) =>{
+    res.status(404).json({msg: "Not found"})
+})
+
+app.use((err, req, res, next) =>{
+    console.log(err)
+    res.status(500).json({msg: "Something went wrong"})
+})
+
+const PORT = process.env.PORT || 5100 
+try {
+    await mongoose.connect(process.env.MONGO_URL)
+    app.listen(PORT, () =>{
     console.log(`server running at ${PORT}`)
 })
+} catch (error) {
+    console.log(error)
+    process.exit(1)
+    
+}  
+
 
