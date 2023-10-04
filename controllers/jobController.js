@@ -24,19 +24,14 @@ export const createJob =  async (req, res) => {
 }
 
 //update job
-export const updateJob = (req, res) =>{
+export const updateJob = async (req, res) =>{
      const {company, position} = req.body
-     if(!company || !position){
-       return res.status(400).json({message: "Please provide company and position"})
-    }
     const {id} = req.params
-    const job = jobs.find((job) => job.id === id)
-    if(!job){
+    const updatedJob = JobModel.findByIdAndUpdate(id, req.body, {new:true})
+    if(!updatedJob){
         return res.status(400).json({message: "No job found"})
     }
-    job.company = company
-    job.position = position
-    res.status(200).json({msg: "Updated successfully", job})
+    res.status(200).json({msg: "Job updated successfully", updatedJob})
 }
 
 //delete job
@@ -46,5 +41,5 @@ export const deleteJob = async (req, res) =>{
     if(!removedJob){
         return res.status(400).json({message: "No job found!"})
     }
-    res.status(200).json({msg: "Deleted successfully", removedJob})
+    res.status(200).json({msg: "Job Deleted successfully"})
 }
