@@ -6,7 +6,6 @@ import express from 'express'
 const app = express()
 
 import mongoose from 'mongoose'
-import { validateTest } from './middleware/validationMiddleware.js'
 
 //middleware
 import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js'
@@ -22,13 +21,6 @@ app.use(morgan('dev'))
 }
 
 app.use(express.json())
-
-app.post('/api/v1/test',
-validateTest
-, (req, res) =>{
-    const {name} = req.body
-    res.send({message: `hello ${name}`})
-})
 
 app.use('/api/v1/jobs', jobRouter)
 app.use('/api/v1/jobs/:id', jobRouter)
