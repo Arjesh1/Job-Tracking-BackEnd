@@ -6,7 +6,10 @@ import express from 'express'
 const app = express()
 
 import mongoose from 'mongoose'
+import { validateTest } from './middleware/validationMiddleware.js'
 
+//middleware
+import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js'
 
 
 //routers
@@ -20,13 +23,11 @@ app.use(morgan('dev'))
 
 app.use(express.json())
 
-app.get('/', (req, res) =>{
-    res.send('Hello world')
-})
-
-app.post('/', (req, res) =>{
-    console.log(req.body)
-    res.json({message: 'data received', data: req.body})
+app.post('/api/v1/test',
+validateTest
+, (req, res) =>{
+    const {name} = req.body
+    res.send({message: `hello ${name}`})
 })
 
 app.use('/api/v1/jobs', jobRouter)
@@ -36,10 +37,7 @@ app.use('*', (req, res) =>{
     res.status(404).json({msg: "Not found"})
 })
 
-app.use((err, req, res, next) =>{
-    console.log(err)
-    res.status(500).json({msg: "Something went wrong"})
-})
+app.use(errorHandlerMiddleware)
 
 const PORT = process.env.PORT || 5100 
 try {
